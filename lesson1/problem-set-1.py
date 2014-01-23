@@ -34,10 +34,7 @@ def sense(world_colors, probabilities, measured_color, sensor_precision):
     for i in range(len(world_colors)):
         for j in range(len(world_colors[0])):
             hit = (measured_color == world_colors[i][j])
-            if probabilities[i][j] > 0:
-                probabilities[i][j] *= hit * pHit + ((1-hit) * pMiss)
-            else:
-                probabilities[i][j] = hit * pHit + ((1-hit) * pMiss)
+            probabilities[i][j] *= hit * pHit + ((1-hit) * pMiss)
     
     normalization = sum_arr(probabilities)
     
@@ -63,19 +60,12 @@ def move(world, movement_length, exact_coefficient):
 #with the following code.
 
 def move_and_measure(world, movement, sensor, movement_precision, sensor_precision):
-    probabilities = [[0 for i in range(len(world[0]))] for j in range(len(world))]
+    p_init = 1.0 / float(len(world)) / float(len(world[0]))
+    probabilities = [[p_init for i in range(len(world[0]))] for j in range(len(world))]
     for i in range(len(movement)):
         probabilities = move(probabilities, movement[i], movement_precision)
-        #print "after move"
-        #show(probabilities)
-        #print "total: %f" % (sum_arr(probabilities))
         probabilities = sense(world, probabilities, sensor[i], sensor_precision)
-        #print "after sense"
-        #show(probabilities)
-        #print "total: %f" % (sum_arr(probabilities))
-    #print "move_and_measure results"
     show(probabilities)
-    #print "total: %f" % (sum_arr(probabilities))
     return probabilities
 
 test_world = [['green', 'green', 'green'], 
